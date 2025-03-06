@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="./css/calander.css"/>
+    <link rel="stylesheet" href="./css/plan.css"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calendar App</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            display: flex;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            display: flex;
+            width: 100%;
+            transition: all 0.3s ease-in-out;
+        }
+
+        .left-section {
+            background-color: #f5f5f5;
+            padding: 20px;
+            width: 250px;
+            transition: width 0.3s ease-in-out;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            border-right: 1px solid #ddd;
+        }
+
+        .center-section {
+            padding: 40px;
+            background-color: white;
+            flex-grow: 6;
+            transition: flex-grow 0.3s ease-in-out;
+        }
+
+        .right-section {
+            background-color: #f5f5f5;
+            padding: 20px;
+            transform: translateX(100%);
+            transition: transform 0.3s ease-in-out;
+            min-width: 250px;
+            position: absolute;
+            right: 0;
+            top: 0;
+            height: 100vh;
+        }
+
+        .right-section.active {
+            transform: translateX(0);
+        }
+
+        /* 일정 추가 버튼 */
+        .add-schedule-btn {
+            display: block;
+            width: 100%;
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #d9534f;
+            color: white;
+            border: none;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .add-schedule-btn:hover {
+            background-color: #c9302c;
+        }
+        .close-schedule-btn{
+            display: block;
+            position:absolute;
+            top:0;
+            right:0;
+            margin: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="left-section">
+            <div class="greeting">🎉 권호재님, OO대학교 합격을 기원합니다! 🎉</div>
+        </div>
+        <div class="center-section">
+            <div class="calendar">
+                <div class="header" id="calendar-header"></div> <!--여기 이제 2025년 n월 이 입력된다.-->
+                <div class="dates"></div>
+            </div>
+        </div>
+        <div class="right-section">
+            <h2>일정 상세</h2>
+            <button class="close-schedule-btn" onclick="closeSchedule()">✖</button>
+            <p id="schedule-content">날짜를 클릭하여 일정을 확인하세요.</p>
+            <button class="add-schedule-btn" onclick="openScheduleForm()">일정 추가</button>
+        </div>
+    </div>
+
+    <div class="schedule-form" id="schedule-form">
+        <h3>일정 생성</h3>
+        <button class="close-btn" onclick="closeScheduleForm()">✖</button>
+        <form id="scheduleForm">
+            <input type="time" id="start-time" required>
+            <input type="time" id="end-time" required>
+            <input type="text" id="schedule-title" placeholder="일정 제목" required>
+            <input type="text" id="schedule-content" placeholder="일정 내용" required>
+            <input type="button" value="생성" class= "create-btn" onclick="saveSchedule()"/>
+        </form>
+    </div>
+
+    <script>
+        function createCalendar() {
+            const today = new Date();
+            const year = today.getFullYear();
+            const month = today.getMonth();
+            document.getElementById('calendar-header').textContent = `${year}년 ${month + 1}월`;
+            const firstDay = new Date(year, month, 1).getDay();
+            const lastDate = new Date(year, month + 1, 0).getDate();
+            let dates = '';
+
+            for (let i = 0; i < firstDay; i++) {
+                dates += '<div class="date empty"></div>';
+            }
+            for (let i = 1; i <= lastDate; i++) {
+                dates += `<div class="date" onclick="showSchedule(${year}, ${month + 1}, ${i})">${i}</div>`;
+            }
+
+            document.querySelector('.dates').innerHTML = dates;
+        }
+
+        function showSchedule(year, month, day) {
+            document.querySelector('.right-section').classList.add('active');
+            document.getElementById('schedule-content').innerText = `${year}년 ${month}월 ${day}일의 일정이 여기에 표시됩니다.`;
+            document.getElementById('schedule-date').value = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+        }
+        function closeSchedule(){
+            document.querySelector('.right-section').classList.remove('active');
+        }
+
+        function openScheduleForm() {
+            document.getElementById('schedule-form').style.display = 'block';
+        }
+
+        function closeScheduleForm() {
+            document.getElementById('schedule-form').style.display = 'none';
+        }
+
+        function saveSchedule() {
+            const date = document.getElementById('schedule-date').value;
+            const startTime = document.getElementById('start-time').value;
+            const endTime = document.getElementById('end-time').value;
+            const title = document.getElementById('schedule-title').value;
+
+            if (date && startTime && endTime && title) {
+                console.log(`일정 생성: ${date}, ${startTime}~${endTime}, 내용: ${title}`);
+                alert("일정이 생성되었습니다!");
+                closeScheduleForm();
+            } else {
+                alert("모든 항목을 입력하세요.");
+            }
+        }
+
+        createCalendar();
+    </script>
+</body>
+</html>
